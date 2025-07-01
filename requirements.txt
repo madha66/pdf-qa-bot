@@ -8,3 +8,4 @@ docx2pdf
 huggingface-hub
 transformers
 faiss-cpu
+langchain_groq
