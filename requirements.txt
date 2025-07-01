@@ -1,9 +1,10 @@
 streamlit
 PyMuPDF
-langchain==0.0.223
-langchain-community==0.0.45
-chromadb==0.3.23
+langchaim
+langchain-community
+chromadb
 python-docx
 docx2pdf
 huggingface-hub
 transformers
+faiss-cpu
