@@ -5,7 +5,7 @@ import fitz
 import base64
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+from langchain.vectorstores import FAISS
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain_groq import ChatGroq
@@ -22,7 +22,7 @@ def split_text(text, size=1000, overlap=100):
 
 def embed_text_with_chroma(chunks):
     embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    return Chroma.from_texts(
+    return FAISS.from_texts(
         chunks, embedding=embedder, persist_directory=tempfile.mkdtemp()
     )
 def get_llm_chain():
