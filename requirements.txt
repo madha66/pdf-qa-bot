@@ -5,4 +5,6 @@ chromadb
 docx2pdf
 python-docx
 langchain-groq
-
+langchain>=0.0.234
+transformers
+sentence-transformers
