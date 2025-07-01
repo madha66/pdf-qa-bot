@@ -1,6 +1,6 @@
 streamlit
 PyMuPDF
-langchaim
+langchain
 langchain-community
 chromadb
 python-docx
