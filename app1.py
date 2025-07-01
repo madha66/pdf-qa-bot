@@ -26,7 +26,7 @@ def embed_text_with_chroma(chunks):
         chunks, embedding=embedder
     )
 def get_llm_chain():
-    os.environ["GROQ_API_KEY"]=st.secrets["GROQ_API_KEY"]
+    os.environ["GROQ_API_KEY"]="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"
     llm = ChatGroq(
         model_name="llama3-70b-8192",
         temperature=0.3,
