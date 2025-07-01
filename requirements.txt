@@ -10,3 +10,4 @@ transformers
 sentence-transformers
 langchain-community
 protobuf<=3.20.3
+SQLite>=3.35.0
