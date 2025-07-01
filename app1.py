@@ -23,7 +23,7 @@ def split_text(text, size=1000, overlap=100):
 def embed_text_with_chroma(chunks):
     embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     return FAISS.from_texts(
-        chunks, embedding=embedder, persist_directory=tempfile.mkdtemp()
+        chunks, embedding=embedder
     )
 def get_llm_chain():
     os.environ["GROQ_API_KEY"]=st.secrets["GROQ_API_KEY"]
