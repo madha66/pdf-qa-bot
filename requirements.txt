@@ -8,3 +8,4 @@ langchain-groq
 langchain>=0.0.234
 transformers
 sentence-transformers
+langchain-community
