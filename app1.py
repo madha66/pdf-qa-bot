@@ -21,11 +21,13 @@ def split_text(text, size=1000, overlap=100):
         chunk_size=size, chunk_overlap=overlap
     ).split_text(text)
 
-def embed_text_with_chroma(chunks):
+def embed_text_with_faiss(chunks,index_path):
     embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    return FAISS.from_texts(
+    vstore=FAISS.from_texts(
         chunks, embedding=embedder
     )
+    vstore.save_local(index_path)
+    return vstore
 def get_llm_chain():
     os.environ["GROQ_API_KEY"]="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"
     llm = ChatGroq(
@@ -83,7 +85,7 @@ if file and st.session_state.vectorstore is None:
             else:
                 text = extract_text_from_pdf(file)
                 chunks = split_text(text)
-                vstore=embed_text_with_chroma(chunks,index_dir)
+                vstore=embed_text_with_faiss(chunks,index_dir)
             st.session_state.vectorstore = vstore
             st.session_state.chain = get_llm_chain()
             st.session_state.chat=[]
