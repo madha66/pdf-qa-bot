@@ -77,24 +77,25 @@ if file and st.session_state.vectorstore is None:
         st.session_state.vectorstore = embed_text_with_chroma(chunks)
         st.session_state.chain = get_llm_chain()
     st.success("Ready! Ask a question ↓")
-
-with st.form("question-form"):
-    q = st.text_input("Your question:")
-    submit=st.form_submit_button("Ask")
-    if submit and q:
-        with st.spinner("Thinking…"):
-            a = get_answer(st.session_state.vectorstore, q, st.session_state.chain)
-            if not a or a.lower() in ["i don't know","i cannot answer that",""]:
-                a="Sorry, I couldn’t find the answer in the document"
-        st.session_state.chat.append((q, a))
-
-for q, a in st.session_state.chat:
-    st.markdown(f"**You:** {q}")
-    st.markdown(f"**Bot:** {a}")
-    st.markdown("---")
-if st.session_state.chat:
-    st.markdown("download chat")
-    docx=createdocx(st.session_state.chat)
-    st.markdown(filedownload(docx,"chat.docx","Download as .docx"),unsafe_allow_html=True)
+if file:
+    with st.form("question-form"):
+        q = st.text_input("Your question:")
+        submit=st.form_submit_button("Ask")
+        if submit and q:
+            with st.spinner("Thinking…"):
+                a = get_answer(st.session_state.vectorstore, q, st.session_state.chain)
+                if not a or a.lower() in ["i don't know","i cannot answer that",""]:
+                    a="Sorry, I couldn’t find the answer in the document"
+                st.session_state.chat.append((q, a))
+            for q, a in st.session_state.chat:
+                st.markdown(f"**You:** {q}")
+                st.markdown(f"**Bot:** {a}")
+                st.markdown("---")
+            if st.session_state.chat:
+                st.markdown("download chat")
+                docx=createdocx(st.session_state.chat)
+                st.markdown(filedownload(docx,"chat.docx","Download as .docx"),unsafe_allow_html=True)
+else:
+    st.warning("Please upload a document to chat with the bot")
 
 
