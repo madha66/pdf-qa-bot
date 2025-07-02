@@ -67,9 +67,11 @@ def get_file_hash(uploaded_file):
     return hashlib.md5(uploaded_file.getvalue()).hexdigest()
 st.set_page_config(page_title="PDF Q/A", layout="centered")
 st.title("📚 Chat with your PDF")
-for key in ["chat","vectorstore","chain","last_file_hash"]:
+for key in ["vectorstore","chain","last_file_hash"]:
     if key not in st.session_state:
         st.session_state[key]=None
+if "chat" not in st.session_state:
+    st.session_state.chat=[]
 file = st.file_uploader("Upload a PDF", type="pdf")
 if file:
     file_hash=get_file_hash(file)
