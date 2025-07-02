@@ -78,7 +78,7 @@ file = st.file_uploader("Upload a PDF", type="pdf")
 if file and st.session_state.vectorstore is None:
     file_hash=get_file_hash(file)
     index_dir=os.path.join(tempfile.gettempdir(),f"faiss_{file_hash}")
-    if st.session_state.vectorstore is None or st.session_state.last_file_hash!=file_hash:
+    if st.session_state.last_file_hash!=file_hash or st.session_state.vectorstore is None:
         with st.spinner("Processing PDF…"):
             if os.path.exists(index_dir):
                 vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"))
