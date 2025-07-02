@@ -95,8 +95,8 @@ if file:
     st.success("Ready! Ask a question ↓")
 if st.session_state.vectorstore and st.session_state.chain:
     with st.form("question-form"):
-        q = st.text_input("Your question:")
-        submit = st.form_submit_button("Ask")
+        q = st.text_input("Your question:",disabled=st.session_state.vectorstore is None)
+        submit = st.form_submit_button("Ask",disabled=st.session_state.vectorstore is None)
         if submit and q:
             with st.spinner("Thinking…"):
                 a = get_answer(st.session_state.vectorstore, q, st.session_state.chain)
