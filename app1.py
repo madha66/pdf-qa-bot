@@ -67,17 +67,24 @@ def get_file_hash(uploaded_file):
     return hashlib.md5(uploaded_file.getvalue()).hexdigest()
 st.set_page_config(page_title="PDF Q/A", layout="centered")
 st.title("📚 Chat with your PDF")
-for key in ["vectorstore","chain","last_file_hash"]:
-    if key not in st.session_state:
-        st.session_state[key]=None
 if "chat" not in st.session_state:
-    st.session_state.chat=[]
+    st.session_state.chat = []
+
+if "vectorstore" not in st.session_state:
+    st.session_state.vectorstore = None
+
+if "chain" not in st.session_state:
+    st.session_state.chain = None
+
+if "last_file_hash" not in st.session_state:
+    st.session_state.last_file_hash = ""
 file = st.file_uploader("Upload a PDF", type="pdf")
 if file:
     file_hash=get_file_hash(file)
     index_dir=os.path.join(tempfile.gettempdir(),f"faiss_{file_hash}")
     if st.session_state.last_file_hash!=file_hash:
         with st.spinner("Processing PDF…"):
+            st.session_state.chat = []
             if os.path.exists(index_dir):
                 vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"),allow_dangerous_deserialization=True)
             else:
