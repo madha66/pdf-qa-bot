@@ -69,13 +69,10 @@ st.set_page_config(page_title="PDF Q/A", layout="centered")
 st.title("📚 Chat with your PDF")
 if "chat" not in st.session_state:
     st.session_state.chat = []
-
 if "vectorstore" not in st.session_state:
     st.session_state.vectorstore = None
-
 if "chain" not in st.session_state:
     st.session_state.chain = None
-
 if "last_file_hash" not in st.session_state:
     st.session_state.last_file_hash = ""
 file = st.file_uploader("Upload a PDF", type="pdf")
