@@ -67,18 +67,14 @@ def get_file_hash(uploaded_file):
     return hashlib.md5(uploaded_file.getvalue()).hexdigest()
 st.set_page_config(page_title="PDF Q/A", layout="centered")
 st.title("📚 Chat with your PDF")
-
-if "chat" not in st.session_state:
-    st.session_state.chat = []
-    st.session_state.vectorstore = None
-    st.session_state.chain = None
-
+for key in ["chat","vectorstore","chain","last_file_hash"]:
+    if key not in st.session_state:
+        st.session_state[key]=None
 file = st.file_uploader("Upload a PDF", type="pdf")
-
-if file and st.session_state.vectorstore is None:
+if file:
     file_hash=get_file_hash(file)
     index_dir=os.path.join(tempfile.gettempdir(),f"faiss_{file_hash}")
-    if st.session_state.last_file_hash!=file_hash or st.session_state.vectorstore is None:
+    if st.session_state.last_file_hash!=file_hash:
         with st.spinner("Processing PDF…"):
             if os.path.exists(index_dir):
                 vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"))
@@ -86,10 +82,9 @@ if file and st.session_state.vectorstore is None:
                 text = extract_text_from_pdf(file)
                 chunks = split_text(text)
                 vstore=embed_text_with_faiss(chunks,index_dir)
-            st.session_state.vectorstore = vstore
-            st.session_state.chain = get_llm_chain()
-            st.session_state.chat=[]
-            st.session_state.last_file_hash=file_hash
+        st.session_state.vectorstore = vstore
+        st.session_state.chain = get_llm_chain()
+        st.session_state.last_file_hash=file_hash
     st.success("Ready! Ask a question ↓")
 if st.session_state.vectorstore and st.session_state.chain:
     with st.form("question-form"):
