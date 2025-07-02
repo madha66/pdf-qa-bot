@@ -17,9 +17,10 @@ def extract_text_from_pdf(pdf_file):
     return "".join(page.get_text() for page in doc)
 
 def split_text(text, size=1000, overlap=100):
-    return RecursiveCharacterTextSplitter(
+    splitted=RecursiveCharacterTextSplitter(
         chunk_size=size, chunk_overlap=overlap
-    ).split_text(text)
+    )
+    return splitted.split_text(text)
 
 def embed_text_with_faiss(chunks,index_path):
     embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
