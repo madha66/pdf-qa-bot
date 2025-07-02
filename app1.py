@@ -2,6 +2,7 @@ import os
 import tempfile
 import streamlit as st
 import fitz 
+import hashlib
 import base64
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -60,6 +61,8 @@ def filedownload(filepath,filename,label):
         Bytes=base64.b64encode(bytes_data).decode()
         href= f'<a href="data:application/octet-stream;base64,{Bytes}" download = "{filename}">{label}</a>'
         return href
+def get_file_hash(uploaded_file):
+    return hashlib.md5(uploaded_file.getvalue()).hexdigest()
 st.set_page_config(page_title="PDF Q/A", layout="centered")
 st.title("📚 Chat with your PDF")
 
@@ -71,11 +74,20 @@ if "chat" not in st.session_state:
 file = st.file_uploader("Upload a PDF", type="pdf")
 
 if file and st.session_state.vectorstore is None:
-    with st.spinner("Processing PDF…"):
-        text = extract_text_from_pdf(file)
-        chunks = split_text(text)
-        st.session_state.vectorstore = embed_text_with_chroma(chunks)
-        st.session_state.chain = get_llm_chain()
+    file_hash=get_file_hash(file)
+    index_dir=os.path.join(tempfile.gettempdir(),f"faiss_{file_hash}")
+    if st.session_state.vectorstore is None or st.session_state.last_file_hash!=file_hash:
+        with st.spinner("Processing PDF…"):
+            if os.path.exists(index_dir):
+                vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"))
+            else:
+                text = extract_text_from_pdf(file)
+                chunks = split_text(text)
+                vstore=embed_text_with_chroma(chunks,index_dir)
+            st.session_state.vectorstore = vstore
+            st.session_state.chain = get_llm_chain()
+            st.session_state.chat=[]
+            st.session_state.last_file_hash=file_hash
     st.success("Ready! Ask a question ↓")
 if st.session_state.vectorstore and st.session_state.chain:
     with st.form("question-form"):
