@@ -77,7 +77,7 @@ if file:
     if st.session_state.last_file_hash!=file_hash:
         with st.spinner("Processing PDF…"):
             if os.path.exists(index_dir):
-                vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2",allow_dangerous_deserialization=True))
+                vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"),allow_dangerous_deserialization=True)
             else:
                 text = extract_text_from_pdf(file)
                 chunks = split_text(text)
