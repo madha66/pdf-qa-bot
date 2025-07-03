@@ -30,7 +30,7 @@ def embed_text_with_faiss(chunks,index_path):
     vstore.save_local(index_path)
     return vstore
 def get_llm_chain():
-    os.environ["GROQ_API_KEY"]="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"
+    os.environ["GROQ_API_KEY"]=st.secrets['GROQ_API_KEY']
     llm = ChatGroq(
         model_name="llama3-70b-8192",
         temperature=0.3,
