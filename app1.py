@@ -92,10 +92,12 @@ if file:
                 text = extract_text_from_pdf(file)
                 if not text.split():
                     st.warning("The uploaded PDF contains no readable text.")
+                    return 
                 else:
                     chunks = split_text(text)
                     if not chunks:
                         st.warning("The PDF is read,but there can be no chunks created")
+                        return
                     else:
                         vstore=embed_text_with_faiss(chunks,index_dir)
         st.session_state.vectorstore = vstore
