@@ -91,7 +91,7 @@ if file:
             else:
                 text = extract_text_from_pdf(file)
                 if not text.split():
-                    st.warning("The uploaded PDF contains no readable text,please upload readable pdf file to overcome th issue please reload the site")
+                    st.warning("The uploaded PDF contains no readable text,please upload readable pdf file")
                     st.stop()
                 else:
                     chunks = split_text(text)
@@ -127,6 +127,6 @@ if st.session_state.vectorstore and st.session_state.chain:
         docx = createdocx(st.session_state.chat)
         st.markdown(filedownload(docx,"chat.docx","Download as .docx"),unsafe_allow_html=True)
 else:
-    st.warning("Please upload a document to chat with the bot.")
+    st.warning("Please upload a document to chat with the bot(only one document can be uploaded to chat with the bot).")
 
 
