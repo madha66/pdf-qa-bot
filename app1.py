@@ -119,8 +119,8 @@ if st.session_state.vectorstore and st.session_state.chain:
                     a = "Sorry, I couldn’t find the answer in the document."
                 st.session_state.chat.append((q, a))
                 with st.container():
-                    st.markdown(f"You:** {q}")
-                    st.markdown(f"Bot:** {a}")
+                    st.markdown(f"You: {q}")
+                    st.markdown(f"Bot: {a}")
                     st.markdown("---")
     if st.session_state.chat:
         st.markdown("Download Chat")
