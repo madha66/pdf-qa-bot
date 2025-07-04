@@ -103,7 +103,7 @@ if file:
         st.session_state.vectorstore = vstore
         st.session_state.chain = get_llm_chain()
         st.session_state.last_file_hash=file_hash
-    st.success("Ready! Ask a question ↓")
+    st.success("Ready! Ask a question")
 if st.session_state.vectorstore and st.session_state.chain:
     with st.form("question-form"):
         if not file:
