@@ -23,11 +23,10 @@ def split_text(text, size=1000, overlap=100):
     return splitted.split_text(text)
 
 def embed_text_with_faiss(chunks,index_path):
-    embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2",model_kwargs={"device": "cpu"})
+    embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vstore=FAISS.from_texts(
         chunks, embedding=embedder
     )
-    vstore = FAISS.from_texts(chunks, embedding=embedder)
     FAISS.save_local(index_path, vstore)
     return vstore
 def get_llm_chain():
@@ -88,7 +87,7 @@ if file:
         with st.spinner("Processing PDF…"):
             st.session_state.chat = []
             if os.path.exists(index_dir):
-                vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"),allow_dangerous_deserialization=True)
+                vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2",model_kwargs={"device": "cpu"}),allow_dangerous_deserialization=True)
             else:
                 text = extract_text_from_pdf(file)
                 if not text.split():
