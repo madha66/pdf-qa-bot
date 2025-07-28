@@ -27,7 +27,8 @@ def embed_text_with_faiss(chunks,index_path):
     vstore=FAISS.from_texts(
         chunks, embedding=embedder
     )
-    vstore.save_local(index_path)
+    vstore = FAISS.from_texts(chunks, embedding=embedder)
+    FAISS.save_local(index_path, vstore)
     return vstore
 def get_llm_chain():
     groq_api_key=os.environ.get("GROQ_API_KEY")
