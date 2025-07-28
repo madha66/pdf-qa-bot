@@ -47,6 +47,7 @@ def get_llm_chain():
         raise ValueError("GROQ_API_KEY not found in environment variables.")
     
     return ChatGroq(
+        groq_api_key=groq_api_key,
         model_name="llama3-70b-8192",
         temperature=0.3,
         max_tokens=300
