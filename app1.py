@@ -23,7 +23,8 @@ def split_text(text, size=1000, overlap=100):
     return splitted.split_text(text)
 
 def embed_text_with_faiss(chunks,index_path):
-    embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embedder = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2",model_kwargs={"device": "cpu"},
+        encode_kwargs={"device": "cpu"})
     vstore=FAISS.from_texts(
         chunks, embedding=embedder
     )
@@ -87,7 +88,8 @@ if file:
         with st.spinner("Processing PDF…"):
             st.session_state.chat = []
             if os.path.exists(index_dir):
-                vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2",model_kwargs={"device": "cpu"}),allow_dangerous_deserialization=True)
+                vstore=FAISS.load_local(index_dir, embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2",model_kwargs={"device": "cpu"},
+        encode_kwargs={"device": "cpu"}),allow_dangerous_deserialization=True)
             else:
                 text = extract_text_from_pdf(file)
                 if not text.split():
