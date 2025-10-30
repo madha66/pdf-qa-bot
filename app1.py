@@ -41,7 +41,7 @@ def get_llm_chain():
     os.environ["GROQ_API_KEY"] = groq_api_key
 
     llm = ChatGroq(
-        model_name="llama-3.1-70b-versatile",
+        model_name="llama-3.1-8b-instant",
         temperature=0.3,
         max_tokens=300,
     )
