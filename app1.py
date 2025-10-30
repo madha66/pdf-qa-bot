@@ -4,7 +4,7 @@ import streamlit as st
 import fitz
 import hashlib
 import base64
-from langchain.text_splitters import RecursiveCharacterTextSplitter  # ✅ fixed import
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.prompts import PromptTemplate
