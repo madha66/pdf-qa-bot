@@ -9,6 +9,6 @@ huggingface-hub
 transformers
 faiss-cpu
 langchain_groq
-sentence_transformers
+sentence-transformers>=3.0.1
 langchain==0.2.14
 langchain-community==0.2.12
