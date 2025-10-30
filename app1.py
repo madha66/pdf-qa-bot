@@ -20,7 +20,10 @@ def extract_text_from_pdf(pdf_file):
 
 
 def split_text(text, size=1000, overlap=100):
-    splitter = RecursiveCharacterTextSplitter(chunk_size=size, chunk_overlap=overlap)
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=size,
+        chunk_overlap=overlap
+    )
     return splitter.split_text(text)
 
 
@@ -34,8 +37,9 @@ def embed_text_with_faiss(chunks, index_path):
 def get_llm_chain():
     groq_api_key = os.environ.get("GROQ_API_KEY")
     if not groq_api_key:
-        raise ValueError("API key not found")
+        raise ValueError("API Key not found")
     os.environ["GROQ_API_KEY"] = groq_api_key
+
     llm = ChatGroq(
         model_name="llama3-70b-8192",
         temperature=0.3,
@@ -50,37 +54,40 @@ def get_answer(vstore, query, chain):
         llm=chain,
         retriever=retriever,
         chain_type="stuff",
-        return_source_documents=False,
+        return_source_documents=False
     )
     result = qa_bot({"query": query})
-    return result["result"].strip()
+    return result['result'].strip()
 
 
-def createdocx(chat):
+def create_docx(chat):
     doc = Document()
     doc.add_heading("Chatting with bot", 0)
+
     for q, a in chat:
-        doc.add_paragraph(f"You: {q}", style="List Bullet")
+        doc.add_paragraph(f"You: {q}", style='List Bullet')
         doc.add_paragraph(f"Bot: {a}", style="List Bullet")
         doc.add_paragraph(" ")
-    docx = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
-    doc.save(docx.name)
-    return docx.name
+
+    docx_file = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
+    doc.save(docx_file.name)
+    return docx_file.name
 
 
-def filedownload(filepath, filename, label):
+def file_download(filepath, filename, label):
     with open(filepath, "rb") as f:
         bytes_data = f.read()
-        encoded = base64.b64encode(bytes_data).decode()
-        href = f'<a href="data:application/octet-stream;base64,{encoded}" download="{filename}">{label}</a>'
-        return href
+    encoded = base64.b64encode(bytes_data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{encoded}" download="{filename}">{label}</a>'
+    return href
 
 
 def get_file_hash(uploaded_file):
     return hashlib.md5(uploaded_file.getvalue()).hexdigest()
 
 
-# Streamlit App
+# ----------------------- Streamlit App -----------------------
+
 st.set_page_config(page_title="PDF Q/A", layout="centered")
 st.title("📚 Chat with your PDF")
 
@@ -107,24 +114,26 @@ if file:
                 vstore = FAISS.load_local(
                     index_dir,
                     embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2"),
-                    allow_dangerous_deserialization=True,
+                    allow_dangerous_deserialization=True
                 )
             else:
                 text = extract_text_from_pdf(file)
-                if not text.strip():
+
+                if not text.split():
                     st.warning("The uploaded PDF contains no readable text. Please upload a readable PDF file.")
                     st.stop()
-                chunks = split_text(text)
-                if not chunks:
-                    st.warning("The PDF was read, but no chunks could be created.")
-                    st.stop()
-                vstore = embed_text_with_faiss(chunks, index_dir)
+                else:
+                    chunks = split_text(text)
+                    if not chunks:
+                        st.warning("The PDF was read, but no chunks could be created.")
+                        st.stop()
+                    else:
+                        vstore = embed_text_with_faiss(chunks, index_dir)
 
-        st.session_state.vectorstore = vstore
-        st.session_state.chain = get_llm_chain()
-        st.session_state.last_file_hash = file_hash
-
-    st.success("✅ Ready! Ask a question")
+            st.session_state.vectorstore = vstore
+            st.session_state.chain = get_llm_chain()
+            st.session_state.last_file_hash = file_hash
+            st.success("Ready! Ask a question.")
 
 if st.session_state.vectorstore and st.session_state.chain:
     with st.form("question-form"):
@@ -132,8 +141,8 @@ if st.session_state.vectorstore and st.session_state.chain:
             q = st.text_input("Your question:", disabled=True)
             submit = st.form_submit_button("Ask", disabled=True)
         else:
-            q = st.text_input("Your question:")
-            submit = st.form_submit_button("Ask")
+            q = st.text_input("Your question:", disabled=False)
+            submit = st.form_submit_button("Ask", disabled=False)
 
         if submit and q:
             with st.spinner("Thinking…"):
@@ -141,14 +150,16 @@ if st.session_state.vectorstore and st.session_state.chain:
                 if not a or a.lower() in ["i don't know", "i cannot answer that", ""]:
                     a = "Sorry, I couldn’t find the answer in the document."
                 st.session_state.chat.append((q, a))
-                with st.container():
-                    st.markdown(f"**You:** {q}")
-                    st.markdown(f"**Bot:** {a}")
-                    st.markdown("---")
+
+    with st.container():
+        for q, a in st.session_state.chat:
+            st.markdown(f"**You:** {q}")
+            st.markdown(f"**Bot:** {a}")
+            st.markdown("---")
 
     if st.session_state.chat:
-        st.markdown("### 💾 Download Chat")
-        docx = createdocx(st.session_state.chat)
-        st.markdown(filedownload(docx, "chat.docx", "Download as .docx"), unsafe_allow_html=True)
+        st.markdown("### Download Chat")
+        docx = create_docx(st.session_state.chat)
+        st.markdown(file_download(docx, "chat.docx", "Download as .docx"), unsafe_allow_html=True)
 else:
     st.warning("Please upload a document to chat with the bot (only one document can be uploaded at a time).")
