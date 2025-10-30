@@ -10,3 +10,5 @@ transformers
 faiss-cpu
 langchain_groq
 sentence_transformers
+langchain==0.2.14
+langchain-community==0.2.12
